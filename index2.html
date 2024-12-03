@@ -1,0 +1,43 @@
+<html>
+
+<head>
+    <title>Görsel Yükleme ve Gösterme</title>
+</head>
+
+<body>
+    <h1>Görsel Yükleyin</h1>
+
+    <!-- Dosya yükleme input'u -->
+    <input type="file" id="fileInput" accept="image/*">
+
+    <!-- Yüklenen görselin gösterileceği alan -->
+    <div id="imageContainer">
+        <img id="uploadedImage" style="max-width: 100%; max-height: 400px;">
+    </div>
+
+    <script>
+        // Dosya yükleme input'unu ve görsel öğesini seç
+        const fileInput = document.getElementById('fileInput');
+        const uploadedImage = document.getElementById('uploadedImage');
+
+        // Dosya yüklendiğinde tetiklenecek olay
+        fileInput.addEventListener('change', function (event) {
+            const file = event.target.files[0]; // İlk dosyayı al
+
+            // Eğer dosya seçildiyse
+            if (file) {
+                const reader = new FileReader();
+
+                // Dosya okunduğunda, görseli ekranda göster
+                reader.onload = function (e) {
+                    uploadedImage.src = e.target.result; // Görselin kaynağını değiştir
+                };
+
+                // Dosyayı oku (görseli Data URL formatında)
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
+</body>
+
+</html>
