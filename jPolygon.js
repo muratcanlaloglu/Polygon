@@ -139,8 +139,9 @@ function check_intersect(x,y){
     return false;
 }
 
+
 //kullanıcının mouse ile canvas üzerine tıkladığı zaman çalışır. Eğer poligon tamamlanmamışsa, yeni bir nokta ekler.
-//Eğer sağ tıklama yapılırsa (ctrl veya sağ fare butonu ile), poligon kendiliğinden kapatılır.
+//Eğer sağ tıklama yapılırsa,poligon kendiliğinden kapatılır.
 function point_it(event) {
     if(complete){
         alert('Polygon already created');
@@ -148,23 +149,24 @@ function point_it(event) {
     }
     var rect, x, y;
 
-    if(event.ctrlKey || event.which === 3 || event.button === 2){
-        if(perimeter.length==2){
+    if(event.which === 3 || event.button === 2 || event === true){
+        if(perimeter.length == 2){
             alert('You need at least three points for a polygon');
             return false;
         }
         x = perimeter[0]['x'];
         y = perimeter[0]['y'];
         if(check_intersect(x,y)){
-            alert('The line you are drowing intersect another line');
+            alert('The line you are drawing intersects another line');
             return false;
         }
         draw(true);
         alert('Polygon successfully closed. You can now clear or start a new drawing.');
-
-	event.preventDefault();
+    
+        event.preventDefault();
         return false;
-    } else {
+    }
+    else {
         rect = canvas.getBoundingClientRect();
         x = event.clientX - rect.left;
         y = event.clientY - rect.top;
@@ -173,13 +175,14 @@ function point_it(event) {
             return false;
         }
         if(check_intersect(x,y)){
-            alert('The line you are drowing intersect another line');
+            alert('The line you are drawing intersect another line');
             return false;
         }
         perimeter.push({'x':x,'y':y});
         draw(false);
         return false;
     }
+
 }
 
 // loadImage fonksiyonu, kullanıcı tarafından seçilen resmi yükler ve canvas üzerine çizer.
