@@ -1,8 +1,11 @@
 
-var perimeter = new Array();
 var complete = false;
-var canvas = document.getElementById("jPolygon");
-var ctx;
+// Canvas nesnesi ve 2D context
+const canvas = document.getElementById('yourCanvasID'); // HTML'deki Canvas ID'sini doğru kullanın
+const ctx = canvas.getContext('2d'); // 2D çizim bağlamını alın
+let perimeter = []; // Çizilen noktaların koordinatlarını saklar
+let currentImage = null; // Global olarak tanımlayın
+
 
 
 /* line_intersects fonksiyonu iki doğrunun kesişip kesişmediğini kontrol ediyor. Kesişim varsa true yoksa false dönüyor.  */
@@ -33,22 +36,45 @@ function point(x, y){
     ctx.moveTo(x,y);
 }
 
-/* son çizilen noktayı geri almak için*/
-function undo(){
-    ctx = undefined;
-    perimeter.pop();
-    complete = false;
-    start(true);
+function undo() {
+    if (perimeter.length > 0) {
+        perimeter.pop(); // Son noktayı kaldır
+        redrawCanvas();
+    } else {
+        console.log("Geri alacak bir nokta yok!");
+    }
 }
 
-/* canvası temizler, poligonun verilerini sıfırlar. */
-function clear_canvas(){
-    ctx = undefined;
-    perimeter = new Array();
+
+function clear_canvas() {
+    perimeter = []; // Tüm noktaları temizle
     complete = false;
-    document.getElementById('coordinates').value = '';
-    start();
+    redrawCanvas();
+    document.getElementById('coordinates').value = ''; // Koordinatları sıfırla
 }
+
+
+function redrawCanvas() {
+    // Canvas'ı temizle
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Yüklenen resmi yeniden çiz
+    if (currentImage) {
+        ctx.drawImage(currentImage, 0, 0, canvas.width, canvas.height);
+    }
+    
+    // Perimeter'daki noktaları yeniden çiz
+    if (perimeter.length > 0) {
+        ctx.beginPath();
+        ctx.moveTo(perimeter[0].x, perimeter[0].y);
+        for (let i = 1; i < perimeter.length; i++) {
+            ctx.lineTo(perimeter[i].x, perimeter[i].y);
+        }
+        ctx.stroke();
+    }
+}
+
+
 
 /* poligonun çizimini yapar. end == true olduğunda poligon kapanır. yani iki nokta birleştiğinde*/
 function draw(end){
@@ -134,7 +160,8 @@ function point_it(event) {
             return false;
         }
         draw(true);
-        alert('Polygon closed');
+        alert('Polygon successfully closed. You can now clear or start a new drawing.');
+
 	event.preventDefault();
         return false;
     } else {
@@ -155,15 +182,16 @@ function point_it(event) {
     }
 }
 
-function start(with_draw) {
-    var img = new Image(); // resim nesnesi oluştur. üzerinde çizim yapılacak resmi temsil eder. 
-    img.src = canvas.getAttribute('data-imgsrc');
-
-    img.onload = function(){
-        ctx = canvas.getContext("2d");
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        if(with_draw == true){
-            draw(false);
-        }
+// loadImage fonksiyonu, kullanıcı tarafından seçilen resmi yükler ve canvas üzerine çizer.
+function loadImage(input) {
+    const file = input.files[0];
+    if (file) {
+        const img = new Image();
+        img.onload = function () {
+            currentImage = img; // Mevcut resim olarak ayarla
+            ctx.clearRect(0, 0, canvas.width, canvas.height); // Canvas'ı temizle
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height); // Yeni resmi çiz
+        };
+        img.src = URL.createObjectURL(file); // Resmi yükle
     }
 }
