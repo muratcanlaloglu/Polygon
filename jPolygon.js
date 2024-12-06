@@ -181,4 +181,6 @@ function loadImage(input) {
         };
         img.src = URL.createObjectURL(file);
     }
+    
+
 }
