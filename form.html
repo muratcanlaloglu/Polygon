@@ -12,15 +12,65 @@
         <form id="nameForm" style="display: flex; flex-direction: column;">
             <div>
                 <label for="firstName">Ad</label>
-                <input type="text" id="firstName" name="firstName" placeholder="Ad">
+                <input type="text" id="firstName" name="firstName" placeholder="Ad" required>
             </div>
             <div>
                 <label for="lastName">Soyad</label>
-                <input type="text" id="lastName" name="lastName" placeholder="Soyad">
+                <input type="text" id="lastName" name="lastName" placeholder="Soyad" required>
             </div>
             <button type="submit">Gönder</button>
         </form>
+
+        <!-- Add a display area for submissions -->
+        <div id="submissionsList" style="margin-top: 20px;">
+            <h3>Previous Submissions:</h3>
+            <pre id="submissionsDisplay"></pre>
+        </div>
     </div>
+
+    <script>
+        // Load existing submissions from localStorage
+        let submissions = JSON.parse(localStorage.getItem('formSubmissions') || '[]');
+
+        // Display existing submissions on page load
+        function displaySubmissions() {
+            const submissionsDisplay = document.getElementById('submissionsDisplay');
+            submissionsDisplay.textContent = JSON.stringify(submissions, null, 2);
+        }
+
+        // Display initial submissions
+        displaySubmissions();
+
+        document.getElementById('nameForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // Get form data
+            const firstName = document.getElementById('firstName').value;
+            const lastName = document.getElementById('lastName').value;
+
+            // Create submission object
+            const submission = {
+                firstName: firstName,
+                lastName: lastName,
+                timestamp: new Date().toISOString()
+            };
+
+            // Add to submissions array
+            submissions.push(submission);
+
+            // Save to localStorage
+            localStorage.setItem('formSubmissions', JSON.stringify(submissions));
+
+            // Update display
+            displaySubmissions();
+
+            // Clear the form
+            this.reset();
+
+            // Show success message
+            alert('Form submitted and saved!');
+        });
+    </script>
 </body>
 
 </html>
