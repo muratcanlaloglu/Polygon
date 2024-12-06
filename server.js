@@ -10,6 +10,24 @@ const PORT = 3000;
 app.use(cors());
 app.use(bodyParser.json());
 
+// New endpoint to get existing coordinates
+app.get('/get-coordinates', (req, res) => {
+    const filePath = path.join(__dirname, 'coordinates.json');
+    
+    fs.readFile(filePath, 'utf8', (err, data) => {
+        if (err) {
+            // If file doesn't exist or there's an error, return empty array
+            return res.json([]);
+        }
+        try {
+            const coordinates = JSON.parse(data);
+            res.json(coordinates);
+        } catch (parseErr) {
+            console.error('Error parsing coordinates:', parseErr);
+            res.json([]);
+        }
+    });
+});
 
 app.post('/save-coordinates', (req, res) => {
     const coordinates = req.body.coordinates;
@@ -27,7 +45,6 @@ app.post('/save-coordinates', (req, res) => {
         res.status(200).json({ message: 'Coordinates saved successfully!', filePath });
     });
 });
-
 
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
